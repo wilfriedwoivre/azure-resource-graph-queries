@@ -1,0 +1,4 @@
+resourcecontainers
+ | where type == "microsoft.resources/subscriptions"
+ | where tags contains "Sandbox"
+ 
