@@ -2,4 +2,4 @@
 
 ## Description
 
-This query returns all subnet name for your subscription
+This query returns all subnets name.
