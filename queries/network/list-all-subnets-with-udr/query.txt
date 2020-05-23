@@ -1,0 +1,8 @@
+resources
+| where type == "microsoft.network/virtualnetworks"
+| project vnetName = name, subnets = (properties.subnets)
+| mvexpand subnets
+| extend subnetName = (subnets.name)
+| extend hasRouteTable = isnotnull(subnets.properties.routeTable)
+| where hasRouteTable == 1
+| project vnetName, subnetName
