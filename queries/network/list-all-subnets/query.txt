@@ -1,0 +1,6 @@
+resources
+| where type == "microsoft.network/virtualnetworks"
+| project vnetName = name, subnets = (properties.subnets)
+| mvexpand subnets
+| extend subnetName = (subnets.name)
+| project vnetName, subnetName
