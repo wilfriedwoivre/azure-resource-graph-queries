@@ -12,7 +12,7 @@ def run():
 
   query = ""
   for query_line in query_lines:
-    query += query_line.replace("\"", "\'").replace("\n", " ")
+    query += query_line.replace("\"", "\'").replace("\n", " ").replace("\t", "")
 
   folderName = list(filter(None, folderPath.split('/')))[-1]
 
