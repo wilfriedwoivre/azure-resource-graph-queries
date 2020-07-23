@@ -58,6 +58,12 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
+    - name: rebase-before-run
+      run: |
+        git config --global user.name 'Gitub Action Bot'
+        git config --global user.email 'wilfried.woivre@users.noreply.github.com'
+        git pull --rebase
+
     - name: generate-deploy-button
       id: generate-deploy-button
       uses: wilfriedwoivre/action-deploy-azure-button@master
