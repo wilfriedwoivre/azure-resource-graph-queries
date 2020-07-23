@@ -1,0 +1,110 @@
+name: Deploy Azure Button
+
+on: push
+
+jobs:
+  generate-matrix:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.matrix-builder.outputs.matrix }}
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: matrix-builder
+      id: matrix-builder
+      uses: ./.github/actions/build-matrix
+
+    - name: debug
+      run: echo ${{ steps.matrix-builder.outputs.matrix }}
+
+  add-azure-arm-template:
+    needs:
+      - generate-matrix
+    runs-on: ubuntu-latest
+    strategy: 
+      fail-fast: false
+      max-parallel: 1
+      matrix: ${{ fromJson(needs.generate-matrix.outputs.matrix) }}
+    
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: generate-arm-template
+      id: generate-arm-template
+      uses: ./.github/actions/generate-arm
+      env:
+        folderPath: ${{ matrix.folder }}
+
+    - name: push-update
+      run: |
+        ls -R
+        git config --global user.name 'Gitub Action Bot'
+        git config --global user.email 'wilfried.woivre@users.noreply.github.com'
+        git add .
+        git diff --quiet && git diff --staged --quiet || git commit -am "Add Azure deploy button"
+        git pull --rebase
+        git push
+
+  add-azure-deploy-button:
+    needs:
+      - add-azure-arm-template
+      - generate-matrix
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      max-parallel: 1
+      matrix: ${{ fromJson(needs.generate-matrix.outputs.matrix)  }}
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: generate-deploy-button
+      id: generate-deploy-button
+      uses: wilfriedwoivre/action-deploy-azure-button@master
+      env:
+        templatePath: '${{ matrix.folder }}/azuredeploy.json'
+        markdownPath: '${{ matrix.folder }}/README.md'
+      
+
+    - name: debug
+      run: echo ${{ steps.generate-deploy-button.outputs.fileUpdated }}
+
+    - name: push-update
+      if: steps.generate-deploy-button.outputs.fileUpdated == 'True'
+      run: |
+        git config --global user.name 'Gitub Action Bot'
+        git config --global user.email 'wilfried.woivre@users.noreply.github.com'
+        git add .
+        git diff --quiet && git diff --staged --quiet || git commit -am "Add Azure deploy button"
+        git pull --rebase
+        git push
+      
+  debug-job:
+    name: Debug run job
+    runs-on: [ubuntu-latest]
+    steps:
+      - name: Dump GitHub context
+        env:
+          GITHUB_CONTEXT: ${{ toJson(github) }}
+        run: echo "$GITHUB_CONTEXT"
+      - name: Dump job context
+        env:
+          JOB_CONTEXT: ${{ toJson(job) }}
+        run: echo "$JOB_CONTEXT"
+      - name: Dump steps context
+        env:
+          STEPS_CONTEXT: ${{ toJson(steps) }}
+        run: echo "$STEPS_CONTEXT"
+      - name: Dump runner context
+        env:
+          RUNNER_CONTEXT: ${{ toJson(runner) }}
+        run: echo "$RUNNER_CONTEXT"
+      - name: Dump strategy context
+        env:
+          STRATEGY_CONTEXT: ${{ toJson(strategy) }}
+        run: echo "$STRATEGY_CONTEXT"
+      - name: Dump matrix context
+        env:
+          MATRIX_CONTEXT: ${{ toJson(matrix) }}
+        run: echo "$MATRIX_CONTEXT"          
+        
