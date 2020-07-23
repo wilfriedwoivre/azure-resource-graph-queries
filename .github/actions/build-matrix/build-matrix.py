@@ -14,12 +14,13 @@ def findAllQueries(dirPath):
 
 
 def run(): 
-  results = findAllQueries(os.path.abspath(".//queries//"))
+  results = findAllQueries(os.getcwd())
 
   matrixOutput = "::set-output name=matrix::{\"include\":["
 
   for item in results:
-      matrixOutput += "{\"folder\":\""+item+"\"},"
+      if not item.startswith('/github/workspace/'):
+        matrixOutput += "{\"folder\":\""+item+"\"},"
 
   matrixOutput = matrixOutput[:-1]
   matrixOutput += "]}"
