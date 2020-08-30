@@ -69,7 +69,7 @@ jobs:
 
     - name: generate-deploy-button
       id: generate-deploy-button
-      uses: wilfriedwoivre/action-deploy-azure-button@master
+      uses: wilfriedwoivre/action-deploy-azure-button@v1.1
       env:
         templatePath: '${{ matrix.folder }}/azuredeploy.json'
         markdownPath: '${{ matrix.folder }}/README.md'
