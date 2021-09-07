@@ -1,0 +1,20 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {},
+  "variables": {
+    "queryName": "subscription-resourcetype-count",
+    "queryCode": "resources | join kind=leftouter      (resourcecontainers     | where type == 'microsoft.resources/subscriptions'     | project subscriptionName=name, subscriptionId) on subscriptionId | where subscriptionName  != '' | summarize count() by type, subscriptionName "
+  },
+  "resources": [
+    {
+      "type": "microsoft.resourcegraph/queries",
+      "apiVersion": "2018-09-01-preview",
+      "name": "[variables('queryName')]",
+      "location": "global",
+      "properties": {
+        "query": "[variables('queryCode')]"
+      }
+    }
+  ]
+}
