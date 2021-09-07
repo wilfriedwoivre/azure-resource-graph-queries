@@ -1,0 +1,7 @@
+resources
+| join kind=leftouter 
+    (resourcecontainers
+    | where type == 'microsoft.resources/subscriptions'
+    | project subscriptionName=name, subscriptionId) on subscriptionId
+| where subscriptionName  != ""
+| summarize count() by type, subscriptionName
