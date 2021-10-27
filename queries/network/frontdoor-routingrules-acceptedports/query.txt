@@ -1,10 +1,5 @@
 resources
-| join kind=leftouter 
-    (resourcecontainers
-    | where type == 'microsoft.resources/subscriptions'
-    | project subscriptionName=name, subscriptionId) on subscriptionId
-| where subscriptionName  != ""
 | where type == "microsoft.network/frontdoors"
-| project subscriptionName, frontDoorName=name, routingRules = (properties.routingRules)
+| project subscriptionId, frontDoorName=name, routingRules = (properties.routingRules)
 | mv-expand routingRules
-| project subscriptionName, frontDoorName, routingRuleName=routingRules.name, protocols = routingRules.properties.acceptedProtocols
+| project subscriptionId, frontDoorName, routingRuleName=routingRules.name, protocols = routingRules.properties.acceptedProtocols
