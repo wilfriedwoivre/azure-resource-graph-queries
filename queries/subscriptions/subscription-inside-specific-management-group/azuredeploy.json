@@ -4,7 +4,7 @@
   "parameters": {},
   "variables": {
     "queryName": "subscription-inside-specific-management-group",
-    "queryCode": "resourcecontainers  | where type == 'microsoft.resources/subscriptions'  | where tags contains 'Sandbox'  "
+    "queryCode": "resourcecontainers  | where type == 'microsoft.resources/subscriptions'  | where (properties.managementGroupAncestorsChain) contains 'Sandbox' "
   },
   "resources": [
     {
