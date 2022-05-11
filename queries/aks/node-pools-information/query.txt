@@ -1,0 +1,6 @@
+resources
+| where type == "microsoft.containerservice/managedclusters"
+| extend properties.agentPoolProfiles
+| project subscriptionId, name, nodePool = properties.agentPoolProfiles
+| mv-expand nodePool
+| project subscriptionId, name, sku = nodePool.vmSize, count = nodePool.['count'], powerState = nodePool.powerState.code 
