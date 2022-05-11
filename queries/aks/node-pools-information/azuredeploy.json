@@ -1,0 +1,20 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {},
+  "variables": {
+    "queryName": "node-pools-information",
+    "queryCode": "resources | where type == 'microsoft.containerservice/managedclusters' | extend properties.agentPoolProfiles | project subscriptionId, name, nodePool = properties.agentPoolProfiles | mv-expand nodePool | project subscriptionId, name, sku = nodePool.vmSize, count = nodePool.['count'], powerState = nodePool.powerState.code  "
+  },
+  "resources": [
+    {
+      "type": "microsoft.resourcegraph/queries",
+      "apiVersion": "2018-09-01-preview",
+      "name": "[variables('queryName')]",
+      "location": "global",
+      "properties": {
+        "query": "[variables('queryCode')]"
+      }
+    }
+  ]
+}
