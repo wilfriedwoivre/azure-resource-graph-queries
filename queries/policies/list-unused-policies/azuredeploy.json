@@ -1,0 +1,20 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {},
+  "variables": {
+    "queryName": "list-unused-policies",
+    "queryCode": "policyresources | where type == 'microsoft.authorization/policydefinitions' | extend policyType = tostring(properties.policyType) | where policyType == 'Custom' | join kind=leftouter (     policyresources     | where type == 'microsoft.authorization/policysetdefinitions'     | extend policyType = tostring(properties.policyType)     | extend  policyDefinitions = properties.policyDefinitions     | where policyType == 'Custom'     | mv-expand policyDefinitions     | extend policyDefinitionId = tostring(policyDefinitions.policyDefinitionId)     | project associedIdToInitiative=policyDefinitionId      | distinct associedIdToInitiative) on $left.id == $right.associedIdToInitiative | where associedIdToInitiative == '' | join kind=leftouter(     policyresources     | where type == 'microsoft.authorization/policyassignments'     | extend policyDefinitionId = tostring(properties.policyDefinitionId)     | project associatedDefinitionId=policyDefinitionId      | distinct associatedDefinitionId ) on $left.id == $right.associatedDefinitionId | where associatedDefinitionId == '' | extend displayName = tostring(properties.displayName) | project id, displayName "
+  },
+  "resources": [
+    {
+      "type": "microsoft.resourcegraph/queries",
+      "apiVersion": "2018-09-01-preview",
+      "name": "[variables('queryName')]",
+      "location": "global",
+      "properties": {
+        "query": "[variables('queryCode')]"
+      }
+    }
+  ]
+}
