@@ -1,0 +1,5 @@
+policyresources
+| where type == "microsoft.authorization/policyassignments"
+| extend scope = tostring(properties.scope)
+| summarize count() by scope
+| order by count_ desc 
