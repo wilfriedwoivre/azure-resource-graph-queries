@@ -1,19 +1,25 @@
 {
   "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
   "contentVersion": "1.0.0.0",
-  "parameters": {},
+  "metadata": {
+    "_generator": {
+      "name": "bicep",
+      "version": "0.12.40.16777",
+      "templateHash": "18169836569706104537"
+    }
+  },
   "variables": {
-    "queryName": "list-assignmentcount-byscope",
-    "queryCode": "policyresources | where type == 'microsoft.authorization/policyassignments' | extend scope = tostring(properties.scope) | summarize count() by scope | order by count_ desc "
+    "name": "list-assignmentcount-byscope",
+    "query": "policyresources\n| where type == \"microsoft.authorization/policyassignments\"\n| extend scope = tostring(properties.scope)\n| summarize count() by scope\n| order by count_ desc \n"
   },
   "resources": [
     {
-      "type": "microsoft.resourcegraph/queries",
+      "type": "Microsoft.ResourceGraph/queries",
       "apiVersion": "2018-09-01-preview",
-      "name": "[variables('queryName')]",
+      "name": "[variables('name')]",
       "location": "global",
       "properties": {
-        "query": "[variables('queryCode')]"
+        "query": "[variables('query')]"
       }
     }
   ]
