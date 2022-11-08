@@ -1,19 +1,25 @@
 {
   "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
   "contentVersion": "1.0.0.0",
-  "parameters": {},
+  "metadata": {
+    "_generator": {
+      "name": "bicep",
+      "version": "0.12.40.16777",
+      "templateHash": "7315308860860230786"
+    }
+  },
   "variables": {
-    "queryName": "frontdoor-routingrules-acceptedports",
-    "queryCode": "resources | where type == 'microsoft.network/frontdoors' | project subscriptionId, frontDoorName=name, routingRules = (properties.routingRules) | mv-expand routingRules | project subscriptionId, frontDoorName, routingRuleName=routingRules.name, protocols = routingRules.properties.acceptedProtocols "
+    "name": "frontdoor-routingrules-acceptedports",
+    "query": "resources\n| where type == \"microsoft.network/frontdoors\"\n| project subscriptionId, frontDoorName=name, routingRules = (properties.routingRules)\n| mv-expand routingRules\n| project subscriptionId, frontDoorName, routingRuleName=routingRules.name, protocols = routingRules.properties.acceptedProtocols\n\n"
   },
   "resources": [
     {
-      "type": "microsoft.resourcegraph/queries",
+      "type": "Microsoft.ResourceGraph/queries",
       "apiVersion": "2018-09-01-preview",
-      "name": "[variables('queryName')]",
+      "name": "[variables('name')]",
       "location": "global",
       "properties": {
-        "query": "[variables('queryCode')]"
+        "query": "[variables('query')]"
       }
     }
   ]
