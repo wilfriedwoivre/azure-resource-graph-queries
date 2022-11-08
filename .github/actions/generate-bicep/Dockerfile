@@ -19,4 +19,4 @@ RUN ls -l
 RUN chmod +x generate-bicep.py
 RUN ls -l
 
-CMD python /usr/src/app/generate-arm.py
+CMD python /usr/src/app/generate-bicep.py
