@@ -1,19 +1,25 @@
 {
   "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
   "contentVersion": "1.0.0.0",
-  "parameters": {},
+  "metadata": {
+    "_generator": {
+      "name": "bicep",
+      "version": "0.12.40.16777",
+      "templateHash": "13166802541489424816"
+    }
+  },
   "variables": {
-    "queryName": "list-all-subnets",
-    "queryCode": "resources | where type == 'microsoft.network/virtualnetworks' | project vnetName = name, subnets = (properties.subnets) | mvexpand subnets | extend subnetName = (subnets.name) | project vnetName, subnetName "
+    "name": "list-all-subnets",
+    "query": "resources\n| where type == \"microsoft.network/virtualnetworks\"\n| project vnetName = name, subnets = (properties.subnets)\n| mvexpand subnets\n| extend subnetName = (subnets.name)\n| project vnetName, subnetName\n\n"
   },
   "resources": [
     {
-      "type": "microsoft.resourcegraph/queries",
+      "type": "Microsoft.ResourceGraph/queries",
       "apiVersion": "2018-09-01-preview",
-      "name": "[variables('queryName')]",
+      "name": "[variables('name')]",
       "location": "global",
       "properties": {
-        "query": "[variables('queryCode')]"
+        "query": "[variables('query')]"
       }
     }
   ]
