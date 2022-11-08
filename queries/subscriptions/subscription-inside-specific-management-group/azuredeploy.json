@@ -1,19 +1,25 @@
 {
   "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
   "contentVersion": "1.0.0.0",
-  "parameters": {},
+  "metadata": {
+    "_generator": {
+      "name": "bicep",
+      "version": "0.12.40.16777",
+      "templateHash": "13833266793403354069"
+    }
+  },
   "variables": {
-    "queryName": "subscription-inside-specific-management-group",
-    "queryCode": "resourcecontainers  | where type == 'microsoft.resources/subscriptions'  | where (properties.managementGroupAncestorsChain) contains 'Sandbox' "
+    "name": "subscription-inside-specific-management-group",
+    "query": "resourcecontainers\n | where type == \"microsoft.resources/subscriptions\"\n | where (properties.managementGroupAncestorsChain) contains \"Sandbox\"\n\n"
   },
   "resources": [
     {
-      "type": "microsoft.resourcegraph/queries",
+      "type": "Microsoft.ResourceGraph/queries",
       "apiVersion": "2018-09-01-preview",
-      "name": "[variables('queryName')]",
+      "name": "[variables('name')]",
       "location": "global",
       "properties": {
-        "query": "[variables('queryCode')]"
+        "query": "[variables('query')]"
       }
     }
   ]
