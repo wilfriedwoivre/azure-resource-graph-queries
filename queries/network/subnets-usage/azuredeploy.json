@@ -1,19 +1,25 @@
 {
   "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
   "contentVersion": "1.0.0.0",
-  "parameters": {},
+  "metadata": {
+    "_generator": {
+      "name": "bicep",
+      "version": "0.12.40.16777",
+      "templateHash": "4869301810473058931"
+    }
+  },
   "variables": {
-    "queryName": "subnets-usage",
-    "queryCode": "resources | where type == 'microsoft.network/virtualnetworks' | project vnetName = name, subnets = (properties.subnets) | mvexpand subnets | extend subnetName = (subnets.name) | extend mask = split(subnets.properties.addressPrefix, '/', 1)[0] | extend usedIp = array_length(subnets.properties.ipConfigurations) | extend totalIp = case(mask == 29, 3, mask == 28, 11, mask == 27, 27, mask == 26, 59, mask == 25, 123, mask == 24, 251, mask == 23, 507, mask == 22, 1019, mask == 21, 2043, mask == 20, 4091, mask == 19, 8187, mask == 18, 16379, mask == 17, 32763, mask == 16, 65531, mask == 15, 131067, mask == 14, 262139, mask == 13, 524283, mask == 12, 1048571, mask == 11, 2097147, mask == 10, 4194299, mask == 9, 8388603, mask == 8, 16777211, -1) | extend availableIp = totalIp - usedIp | project vnetName, subnetName, mask, usedIp, totalIp, availableIp, subnets | order by toint(mask) desc "
+    "name": "subnets-usage",
+    "query": "resources\n| where type == \"microsoft.network/virtualnetworks\"\n| project vnetName = name, subnets = (properties.subnets)\n| mvexpand subnets\n| extend subnetName = (subnets.name)\n| extend mask = split(subnets.properties.addressPrefix, '/', 1)[0]\n| extend usedIp = array_length(subnets.properties.ipConfigurations)\n| extend totalIp = case(mask == 29, 3,\n\t\t\t\t\t\tmask == 28, 11,\n\t\t\t\t\t\tmask == 27, 27,\n\t\t\t\t\t\tmask == 26, 59,\n\t\t\t\t\t\tmask == 25, 123,\n\t\t\t\t\t\tmask == 24, 251,\n\t\t\t\t\t\tmask == 23, 507,\n\t\t\t\t\t\tmask == 22, 1019,\n\t\t\t\t\t\tmask == 21, 2043,\n\t\t\t\t\t\tmask == 20, 4091,\n\t\t\t\t\t\tmask == 19, 8187,\n\t\t\t\t\t\tmask == 18, 16379,\n\t\t\t\t\t\tmask == 17, 32763,\n\t\t\t\t\t\tmask == 16, 65531,\n\t\t\t\t\t\tmask == 15, 131067,\n\t\t\t\t\t\tmask == 14, 262139,\n\t\t\t\t\t\tmask == 13, 524283,\n\t\t\t\t\t\tmask == 12, 1048571,\n\t\t\t\t\t\tmask == 11, 2097147,\n\t\t\t\t\t\tmask == 10, 4194299,\n\t\t\t\t\t\tmask == 9, 8388603,\n\t\t\t\t\t\tmask == 8, 16777211,\n\t\t\t\t\t\t-1)\n| extend availableIp = totalIp - usedIp\n| project vnetName, subnetName, mask, usedIp, totalIp, availableIp, subnets\n| order by toint(mask) desc\n\n"
   },
   "resources": [
     {
-      "type": "microsoft.resourcegraph/queries",
+      "type": "Microsoft.ResourceGraph/queries",
       "apiVersion": "2018-09-01-preview",
-      "name": "[variables('queryName')]",
+      "name": "[variables('name')]",
       "location": "global",
       "properties": {
-        "query": "[variables('queryCode')]"
+        "query": "[variables('query')]"
       }
     }
   ]
