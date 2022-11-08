@@ -62,10 +62,10 @@ jobs:
     - uses: actions/checkout@v3
 
     - name: Bicep Build
-        uses: Azure/bicep-build-action@v1.0.0
-        with:
-          bicepFilePath: '${{ matrix.folder }}/query.bicep'
-          outputFilePath: '${{ matrix.folder }}/azuredeploy.json'
+      uses: Azure/bicep-build-action@v1.0.0
+      with:
+        bicepFilePath: '${{ matrix.folder }}/query.bicep'
+        outputFilePath: '${{ matrix.folder }}/azuredeploy.json'
 
     - name: push-update
       run: |
