@@ -1,19 +1,25 @@
 {
   "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
   "contentVersion": "1.0.0.0",
-  "parameters": {},
+  "metadata": {
+    "_generator": {
+      "name": "bicep",
+      "version": "0.12.40.16777",
+      "templateHash": "7253443410234141084"
+    }
+  },
   "variables": {
-    "queryName": "subscriptions-countby-managementgroups",
-    "queryCode": "resourcecontainers | where type == 'microsoft.resources/subscriptions' | project subscriptionName = name, managementgroups = (properties.managementGroupAncestorsChain) | mv-expand managementgroups | summarize count() by tostring(managementgroups.displayName) | order by count_ desc "
+    "name": "subscriptions-countby-managementgroups",
+    "query": "resourcecontainers\n| where type == 'microsoft.resources/subscriptions'\n| project subscriptionName = name, managementgroups = (properties.managementGroupAncestorsChain)\n| mv-expand managementgroups\n| summarize count() by tostring(managementgroups.displayName)\n| order by count_ desc \n"
   },
   "resources": [
     {
-      "type": "microsoft.resourcegraph/queries",
+      "type": "Microsoft.ResourceGraph/queries",
       "apiVersion": "2018-09-01-preview",
-      "name": "[variables('queryName')]",
+      "name": "[variables('name')]",
       "location": "global",
       "properties": {
-        "query": "[variables('queryCode')]"
+        "query": "[variables('query')]"
       }
     }
   ]
