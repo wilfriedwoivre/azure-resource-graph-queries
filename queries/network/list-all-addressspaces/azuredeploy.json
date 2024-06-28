@@ -1,0 +1,26 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "metadata": {
+    "_generator": {
+      "name": "bicep",
+      "version": "0.28.1.47646",
+      "templateHash": "3315614488277165905"
+    }
+  },
+  "variables": {
+    "name": "list-all-addressspaces",
+    "query": "resources\n| where type == \"microsoft.network/virtualnetworks\"\n| project id, vnetName = name, spaces = (properties.addressSpace.addressPrefixes)\n| mvexpand spaces\n\n"
+  },
+  "resources": [
+    {
+      "type": "Microsoft.ResourceGraph/queries",
+      "apiVersion": "2018-09-01-preview",
+      "name": "[variables('name')]",
+      "location": "global",
+      "properties": {
+        "query": "[variables('query')]"
+      }
+    }
+  ]
+}
