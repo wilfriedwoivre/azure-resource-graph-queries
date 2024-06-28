@@ -5,12 +5,12 @@
     "_generator": {
       "name": "bicep",
       "version": "0.28.1.47646",
-      "templateHash": "5964911850894348550"
+      "templateHash": "14478960848599198905"
     }
   },
   "variables": {
     "name": "list-definitioncount-byscope",
-    "query": "policyresources\n| where type == \"microsoft.authorization/policydefinitions\"\n| extend policyType = tostring(properties.policyType)\n| where policyType == \"Custom\"\n| project id\n| extend scope = tostring(split(id, \"/providers/Microsoft.Authorization/policyDefinitions/\", 0)[0])\n| summarize count() by scope\n| order by count_ desc \n"
+    "query": "policyresources\n| where type has \"microsoft.authorization/policydefinitions\"\n| extend scope = tostring(parse_json(properties).scope)\n| count() by scope| order by count_ desc\n\n\n"
   },
   "resources": [
     {
