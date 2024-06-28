@@ -1,0 +1,4 @@
+resources
+| where type == "microsoft.network/virtualnetworks"
+| project id, vnetName = name, spaces = (properties.addressSpace.addressPrefixes)
+| mvexpand spaces
