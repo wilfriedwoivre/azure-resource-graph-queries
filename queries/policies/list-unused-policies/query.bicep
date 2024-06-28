@@ -1,24 +1,31 @@
-param name string = 'list-unused-policies'
-
+var name = 'list-unused-policies'
 var query = '''
 policyresources
-| where type == "microsoft.authorization/policydefinitions" and tostring(properties.policyType) == "Custom"
+| where type == "microsoft.authorization/policydefinitions"
+| extend policyType = tostring(properties.policyType)
+| where policyType == "Custom"
 | join kind=leftouter (
     policyresources
-    | where type == "microsoft.authorization/policysetdefinitions" and tostring(properties.policyType) == "Custom"
+    | where type == "microsoft.authorization/policysetdefinitions"
+    | extend policyType = tostring(properties.policyType)
+    | extend  policyDefinitions = properties.policyDefinitions
+    | where policyType == "Custom"
     | mv-expand policyDefinitions
     | extend policyDefinitionId = tostring(policyDefinitions.policyDefinitionId)
-    | distinct policyDefinitionId
-) on $left.id == $right.policyDefinitionId
-| where isnull($right.policyDefinitionId)
+    | project associedIdToInitiative=policyDefinitionId 
+    | distinct associedIdToInitiative) on $left.id == $right.associedIdToInitiative
+| where associedIdToInitiative == ""
 | join kind=leftouter(
     policyresources
     | where type == "microsoft.authorization/policyassignments"
     | extend policyDefinitionId = tostring(properties.policyDefinitionId)
-    | distinct policyDefinitionId
-) on $left.id == $right.policyDefinitionId
-| where isnull($right.policyDefinitionId)
-| project id, displayName = tostring(properties.displayName)
+    | project associatedDefinitionId=policyDefinitionId 
+    | distinct associatedDefinitionId
+) on $left.id == $right.associatedDefinitionId
+| where associatedDefinitionId == ""
+| extend displayName = tostring(properties.displayName)
+| project id, displayName
+
 '''
 
 resource rgQuery 'Microsoft.ResourceGraph/queries@2018-09-01-preview' = {
