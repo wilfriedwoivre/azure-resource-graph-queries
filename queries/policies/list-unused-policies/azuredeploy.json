@@ -4,19 +4,24 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.12.40.16777",
-      "templateHash": "1520880086717139268"
+      "version": "0.28.1.47646",
+      "templateHash": "2139589546763165499"
+    }
+  },
+  "parameters": {
+    "name": {
+      "type": "string",
+      "defaultValue": "list-unused-policies"
     }
   },
   "variables": {
-    "name": "list-unused-policies",
-    "query": "policyresources\n| where type == \"microsoft.authorization/policydefinitions\"\n| extend policyType = tostring(properties.policyType)\n| where policyType == \"Custom\"\n| join kind=leftouter (\n    policyresources\n    | where type == \"microsoft.authorization/policysetdefinitions\"\n    | extend policyType = tostring(properties.policyType)\n    | extend  policyDefinitions = properties.policyDefinitions\n    | where policyType == \"Custom\"\n    | mv-expand policyDefinitions\n    | extend policyDefinitionId = tostring(policyDefinitions.policyDefinitionId)\n    | project associedIdToInitiative=policyDefinitionId \n    | distinct associedIdToInitiative) on $left.id == $right.associedIdToInitiative\n| where associedIdToInitiative == \"\"\n| join kind=leftouter(\n    policyresources\n    | where type == \"microsoft.authorization/policyassignments\"\n    | extend policyDefinitionId = tostring(properties.policyDefinitionId)\n    | project associatedDefinitionId=policyDefinitionId \n    | distinct associatedDefinitionId\n) on $left.id == $right.associatedDefinitionId\n| where associatedDefinitionId == \"\"\n| extend displayName = tostring(properties.displayName)\n| project id, displayName\n\n"
+    "query": "policyresources\n| where type == \"microsoft.authorization/policydefinitions\" and tostring(properties.policyType) == \"Custom\"\n| join kind=leftouter (\n    policyresources\n    | where type == \"microsoft.authorization/policysetdefinitions\" and tostring(properties.policyType) == \"Custom\"\n    | mv-expand policyDefinitions\n    | extend policyDefinitionId = tostring(policyDefinitions.policyDefinitionId)\n    | distinct policyDefinitionId\n) on $left.id == $right.policyDefinitionId\n| where isnull($right.policyDefinitionId)\n| join kind=leftouter(\n    policyresources\n    | where type == \"microsoft.authorization/policyassignments\"\n    | extend policyDefinitionId = tostring(properties.policyDefinitionId)\n    | distinct policyDefinitionId\n) on $left.id == $right.policyDefinitionId\n| where isnull($right.policyDefinitionId)\n| project id, displayName = tostring(properties.displayName)\n"
   },
   "resources": [
     {
       "type": "Microsoft.ResourceGraph/queries",
       "apiVersion": "2018-09-01-preview",
-      "name": "[variables('name')]",
+      "name": "[parameters('name')]",
       "location": "global",
       "properties": {
         "query": "[variables('query')]"
